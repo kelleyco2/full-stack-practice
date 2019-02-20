@@ -23,3 +23,5 @@ yarn-debug.log*
 yarn-error.log*
 
 .env
+
+server/moonlight-1381e-firebase-adminsdk-272eu-d639418c12.json

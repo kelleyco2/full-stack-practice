@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import Axios from 'axios';
 import { connect } from 'react-redux' 
 import { userLoggedOut } from '../ducks/reducer' 
-import { Redirect } from 'react-router-dom'
+// import { Redirect } from 'react-router-dom'
 import axios from 'axios' 
 
 class Dashboard extends Component {
@@ -50,7 +50,7 @@ class Dashboard extends Component {
           }).then(res => {
               console.log(res.data)
               this.setState({
-                  image: res.data[0].adurl
+                  image: res.data
               })
           })
         }).catch(error => {
@@ -83,10 +83,10 @@ class Dashboard extends Component {
             <input type="radio" name='rate' value='Per Hour' onChange={(e) => {this.setState({per: e.target.value})}}/>Per Hour <br/>
             <button type='submit'>Send</button>
         </form>
-        <img src={this.state.image} alt=""/>
+        <img src={this.state.image ? this.state.image : ''} alt=""/>
       </div>
       :
-      <Redirect to='/' />
+      null
   }
 }
 

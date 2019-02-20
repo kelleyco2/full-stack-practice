@@ -9,8 +9,20 @@ const AWS = require('aws-sdk')
 const fileType = require('file-type')
 const bluebird = require('bluebird')
 const multiparty = require('multiparty')
+const admin = require('firebase-admin')
+
 
 const { SERVER_PORT, SESSION_SECRET, CONNECTION_STRING, ACCESS_KEY, SECRET_ACCESS_KEY } = process.env
+
+
+var serviceAccount = require('./moonlight-1381e-firebase-adminsdk-272eu-d639418c12.json');
+
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount),
+  databaseURL: "https://moonlight-1381e.firebaseio.com"
+});
+
+var db = admin.firestore()
 
 const auth = require('./Auth')
 const advert = require('./Ad')
@@ -75,7 +87,30 @@ app.post('/auth/register', auth.register)
 app.get('/auth/logout', auth.logout)
 app.get('/auth/currentUser', auth.getCurrentUser)
 
-app.post('/advert', advert.addToDB)
+app.post('/advert', async (req ,res) => {
+    try {
+        let { email, image, rate, per } = req.body
+    
+        var docRef = db.collection('users').doc('cooper')
+        await docRef.set({
+            email,
+            image,
+            rate,
+            per
+        })
+
+        let response = await db.collection('users').doc('cooper').get().then(res => {
+            return res._fieldsProto.image.stringValue
+        })
+
+        console.log(response)
+    
+        res.status(200).send(response)
+    } catch(error) {
+        console.log('error adding to firebase', error)
+        res.status(500).send(error)
+    }
+})
 
 app.listen(SERVER_PORT, () => {
     console.log('Listening on port', SERVER_PORT)
